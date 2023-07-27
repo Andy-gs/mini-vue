@@ -1,19 +1,27 @@
-import { track, trigger } from './effect'
+import { mutableHandlers, readonlyBaseHandlers } from './baseHandlers'
+
+export const enum ReactiveFlags {
+    IS_REACTIVE = '__v_isReactive',
+    IS_READONLY = '__v_isReadonly'
+}
+
 export function reactive(raw: any) {
-    return new Proxy(raw, {
-        get(target, key) {
-            const res = Reflect.get(target, key)
+    return createActiveObject(raw)
+}
 
-            // 依赖收集
-            track(target, key)
-            return res
-        },
-        set(target, key, value) {
-            const res = Reflect.set(target, key, value)
+export function readonly(raw) {
+    return createActiveObject(raw, readonlyBaseHandlers)
+}
 
-            // 触发依赖
-            trigger(target, key)
-            return res
-        }
-    })
+export function isReactive(value) {
+    return !!value[ReactiveFlags.IS_REACTIVE] // 不是 Proxy 就不会调用 get，得到的就是 undefined，所以双重取反布尔值就行
+}
+
+export function isReadonly(value) {
+    return !!value[ReactiveFlags.IS_READONLY] // 不是 Proxy 就不会调用 get，得到的就是 undefined，所以双重取反布尔值就行
+}
+
+// 如果抽离了 readonly 的 set，这里默认值设不设置都可以，我这里抽离了的，所以默认值放上是可以的
+function createActiveObject(raw, beseHandlers = mutableHandlers) {
+    return new Proxy(raw, beseHandlers)
 }
