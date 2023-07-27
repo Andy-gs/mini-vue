@@ -71,22 +71,21 @@ describe('effect', () => {
     })
 
     it('stop', () => {
-        const NUM = 2
-        const CHECKNUM = 3
         let dunmmy
         const obj = reactive({ prop: 1 })
         const runner = effect(() => {
             dunmmy = obj.prop
         })
-        obj.prop = NUM
-        expect(dunmmy).toBe(NUM)
+        obj.prop = 2
+        expect(dunmmy).toBe(2)
         stop(runner)
-        obj.prop = CHECKNUM
-        expect(dunmmy).toBe(NUM)
+        // obj.prop = 3
+        obj.prop++
+        expect(dunmmy).toBe(2)
 
         // 调用 runner 函数
         runner()
-        expect(dunmmy).toBe(CHECKNUM)
+        expect(dunmmy).toBe(3)
 
     })
 

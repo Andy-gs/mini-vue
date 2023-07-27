@@ -1,5 +1,8 @@
 import { extend } from "../shared"
 
+// 全局变量收集effect fn
+let activeEffect
+let shouldTrack
 class ReactiveEffect {
     private _fn: any
     public deps = []
@@ -11,9 +14,15 @@ class ReactiveEffect {
         this.scheduler = scheduler
     }
     run() {
+        if (!this.cleanupEffectActive) {
+            return this._fn()
+        }
+        shouldTrack = true
         // 全局变量收集effect fn
         activeEffect = this
-        return this._fn()
+        const res = this._fn()
+        shouldTrack = false
+        return res
     }
     stop() {
         if (this.cleanupEffectActive) {
@@ -27,14 +36,17 @@ class ReactiveEffect {
 }
 
 function cleanupEffect(effect) {
-    effect.deps.forEach((dep: any) => {
+    effect.deps.forEach(dep => {
         dep.delete(effect)
     });
+    effect.deps.length = 0
 }
 
-
-const targetMap = new WeakMap()
+const targetMap = new Map() 
 export function track(target, key) {
+    if (!activeEffect) return
+    if (!shouldTrack) return
+
     // target -> key -> dep
     let depsMap = targetMap.get(target)
     // 初始化判断
@@ -49,9 +61,8 @@ export function track(target, key) {
         depsMap.set(key, dep)
     }
 
-    if(!activeEffect) return
+    if(dep.has(activeEffect)) return
     dep.add(activeEffect)
-
     activeEffect.deps.push(dep)
 
 }
@@ -73,11 +84,9 @@ export function stop(runner) {
     runner.effect.stop()
 }
 
-// 全局变量收集effect fn
-let activeEffect
 export function effect(fn, options: any = {}) {
     // fn 
- 
+
     const _effect = new ReactiveEffect(fn, options.scheduler)
     extend(_effect, options)
     _effect.run()
