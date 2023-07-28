@@ -1,5 +1,6 @@
+import { isObject } from "../shared"
 import { track, trigger } from "./effect"
-import { ReactiveFlags } from "./reactive"
+import { ReactiveFlags, reactive, readonly } from "./reactive"
 
 // 不需要每次都创建一个新的get，set，初始化时创建一个即可
 const get = createGetter()
@@ -16,12 +17,19 @@ function createGetter(isReadonly = false) {
         const res = Reflect.get(target, key)
 
         // 判断是不是 reactive
-        if(key === ReactiveFlags.IS_REACTIVE) {
+        if (key === ReactiveFlags.IS_REACTIVE) {
             return !isReadonly
-        } else if(key === ReactiveFlags.IS_READONLY) {
+        } else if (key === ReactiveFlags.IS_READONLY) {
             return isReadonly
         }
-        
+
+        // 判断是不是 对象
+        if (isObject(res)) {
+            return isReadonly
+                ? readonly(res)
+                : reactive(res)
+        }
+
         // 依赖收集
         // 抽离公共，判断是否需要收集依赖<readonly>
         !isReadonly && track(target, key)
