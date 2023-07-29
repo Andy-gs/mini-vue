@@ -1,6 +1,7 @@
 import { extend, isObject } from "../shared"
 import { track, trigger } from "./effect"
-import { ReactiveFlags, reactive, readonly } from "./reactive"
+import { ReactiveFlags, createActiveObject, reactive, readonly } from "./reactive"
+import { isRef, unRef } from "./ref"
 
 // 不需要每次都创建一个新的get，set，初始化时创建一个即可
 const get = createGetter()
@@ -11,7 +12,16 @@ const readonlySet = createSetter(true)
 
 const shallowReadonlyGet = createGetter(true, true)
 
-
+const proxyRefsGet = function get(target, key) {
+    return unRef(Reflect.get(target, key))
+}
+const proxyRefsSet = function set(target, key, value) {
+    if (isRef(Reflect.get(target, key)) && !isRef(value)) {
+        return Reflect.get(target, key).value = value
+    } else {
+        return Reflect.set(target, key, value)
+    }
+}
 
 // 抽离get
 function createGetter(isReadonly = false, isShallowReadonly = false) {
@@ -69,3 +79,8 @@ export const readonlyBaseHandlers = {
 export const shallowReadonlyBaseHandlers = extend({}, readonlyBaseHandlers, {
     get: shallowReadonlyGet
 })
+
+export const proxyRefsBaseHandlers = {
+    get: proxyRefsGet,
+    set: proxyRefsSet
+}

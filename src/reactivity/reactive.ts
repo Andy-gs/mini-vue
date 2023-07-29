@@ -30,6 +30,6 @@ export function isProxy(value) {
 }
 
 // 如果抽离了 readonly 的 set，这里默认值设不设置都可以，我这里抽离了的，所以默认值放上是可以的
-function createActiveObject(raw, beseHandlers = mutableHandlers) {
+export function createActiveObject(raw, beseHandlers = mutableHandlers) {
     return new Proxy(raw, beseHandlers)
 }

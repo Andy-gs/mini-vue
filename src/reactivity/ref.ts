@@ -1,6 +1,7 @@
 import { hasChanged, isObject } from "../shared"
+import { proxyRefsBaseHandlers } from "./baseHandlers"
 import { isTracking, trackEffects, triggerEffects } from "./effect"
-import { reactive } from "./reactive"
+import { createActiveObject, reactive } from "./reactive"
 
 export enum RefFlags {
     IS_REF = '__v_isRef'
@@ -56,16 +57,5 @@ export function unRef(ref) {
 }
 
 export function proxyRefs(raw) {
-    return new Proxy(raw, {
-        get(target, key) {
-            return unRef(Reflect.get(target, key))
-        },
-        set(target, key, value) {
-            if (isRef(Reflect.get(target, key)) && !isRef(value)) {
-                return Reflect.get(target, key).value = value
-            } else {
-                return Reflect.set(target, key, value)
-            }
-        }
-    })
+    return createActiveObject(raw, proxyRefsBaseHandlers)
 }
