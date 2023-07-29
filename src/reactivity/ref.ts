@@ -2,10 +2,15 @@ import { hasChanged, isObject } from "../shared"
 import { isTracking, trackEffects, triggerEffects } from "./effect"
 import { reactive } from "./reactive"
 
+export enum RefFlags {
+    IS_REF = '__v_isRef'
+}
+
 class RefImpl {
     private _value: any
     public dep
     private _rawValue: any
+    public [RefFlags.IS_REF] = true
     constructor(value: any) {
         this._rawValue = value
         // value 为对象时转为reactive包一层
@@ -40,4 +45,12 @@ export function convert(value) {
 
 export function ref(value) {
     return new RefImpl(value)
+}
+
+export function isRef(ref) {
+    return !!ref.__v_isRef
+}
+
+export function unRef(ref) {
+    return isRef(ref) ? ref.value : ref
 }
