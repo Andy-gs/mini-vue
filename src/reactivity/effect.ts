@@ -3,7 +3,7 @@ import { extend } from "../shared"
 // 全局变量收集effect fn
 let activeEffect
 let shouldTrack = false
-class ReactiveEffect {
+export class ReactiveEffect {
     private _fn: any
     public deps = []
     cleanupEffectActive = true

@@ -1,6 +1,6 @@
 import { extend, isObject } from "../shared"
 import { track, trigger } from "./effect"
-import { ReactiveFlags, createActiveObject, reactive, readonly } from "./reactive"
+import { ReactiveFlags, reactive, readonly } from "./reactive"
 import { isRef, unRef } from "./ref"
 
 // 不需要每次都创建一个新的get，set，初始化时创建一个即可
