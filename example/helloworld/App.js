@@ -1,10 +1,10 @@
 import { h } from "../../lib/xin-mini-vue.esm.js"
-window.s = null
+window.self = null
 export const App = {
     // 没搞编译，所以template不写，写render就行
     // 这里假设用户写了render
     render() {
-        window.s = this
+        window.self = this
         // 返回虚拟VNode
         return h('div',
             {
