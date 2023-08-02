@@ -59,7 +59,7 @@ function createSetter(isReadonly = false) {
             trigger(target, key)
             return res
         } else {
-            console.warn(`key${key}set失败，${target}是只读`)
+            console.warn(`key${key}set失败，target是只读`)
             return true
         }
     }

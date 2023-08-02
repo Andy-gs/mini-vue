@@ -1,3 +1,4 @@
+import { isObject } from '../shared/index'
 import { mutableHandlers, readonlyBaseHandlers, shallowReadonlyBaseHandlers } from './baseHandlers'
 
 export const enum ReactiveFlags {
@@ -31,5 +32,6 @@ export function isProxy(value) {
 
 // 如果抽离了 readonly 的 set，这里默认值设不设置都可以，我这里抽离了的，所以默认值放上是可以的
 export function createActiveObject(raw, beseHandlers = mutableHandlers) {
+    if (!isObject(raw)) console.warn('target必须是一个对象')
     return new Proxy(raw, beseHandlers)
 }
