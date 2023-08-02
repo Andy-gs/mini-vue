@@ -9,7 +9,10 @@ export const App = {
         return h('div',
             {
                 id: 'root',
-                class: ['bgc-red', 'font-blue']
+                class: ['bgc-red', 'font-blue'],
+                onClick() {
+                    console.log('click')
+                }
             },
             `hi,${this.msg}`
             // this.$el -> get root element
