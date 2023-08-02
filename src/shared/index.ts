@@ -6,3 +6,9 @@ export const isObject = (value: any) => value !== null && typeof value === 'obje
 export const hasChanged = (oldValue: any, newValue: any) => Object.is(oldValue, newValue)
 
 export const hasOwn = (value, key) => Object.prototype.hasOwnProperty.call(value, key)
+
+export const camelize = (str: string) => str.replace(/-(\w)/g, (_, c: string) => c ? c.toUpperCase() : '')
+
+export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+
+export const toHandlerKey = (str: string) => str ? `on${capitalize(str)}` : ''

@@ -1,4 +1,5 @@
 import { shallowReadonly } from "../reactivity/reactive"
+import { emit } from "./componentEmit"
 import { initProps } from "./componentProps"
 import { publicInstanceProxyHandlers } from "./componentPublicInstance"
 
@@ -7,8 +8,10 @@ export function createComponentInstance(vnode) {
         vnode,
         type: vnode.type,
         setupState: {},
-        props: {}
+        props: {},
+        emit: (event) => { }
     }
+    component.emit = emit.bind(null, component)
     return component
 }
 
@@ -34,7 +37,9 @@ function setupStatefulComponent(instance: any) {
         // 返回function我们认为是它是组件的一个render函数
         // 返回object认为是一个会把object注入到当前的组件的上下文中
 
-        const setupResult = setup(shallowReadonly(instance.props))
+        const setupResult = setup(shallowReadonly(instance.props), {
+            emit: instance.emit
+        })
 
         handleSetupResult(instance, setupResult)
     }
