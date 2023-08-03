@@ -1,4 +1,5 @@
 import { ShapeFlags } from "../shared/ShapeFlags"
+import { isObject } from "../shared/index"
 
 export function createVNode(type, props?, children?) {
     const vnode = {
@@ -15,6 +16,10 @@ export function createVNode(type, props?, children?) {
     }
     else if (Array.isArray(children)) {
         vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN
+    }
+
+    if((vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) && isObject(children)) {
+        vnode.shapeFlag |= ShapeFlags.SLOT_CHILDREN
     }
 
     return vnode
