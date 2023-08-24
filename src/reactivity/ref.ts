@@ -1,4 +1,4 @@
-import { hasChanged, isObject } from "../shared"
+import { hasChanged, isObject } from "../shared/index"
 import { proxyRefsBaseHandlers } from "./baseHandlers"
 import { isTracking, trackEffects, triggerEffects } from "./effect"
 import { createActiveObject, reactive } from "./reactive"

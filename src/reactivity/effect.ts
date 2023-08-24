@@ -1,4 +1,4 @@
-import { extend } from "../shared"
+import { assign, extend } from "../shared/index"
 
 // 全局变量收集effect fn
 let activeEffect
@@ -96,11 +96,17 @@ export function stop(runner) {
 export function effect(fn, options: any = {}) {
     // fn 
 
+    interface ReacvtiveEffectRunner<T> {
+        (): T,
+        effect: ReactiveEffect
+    }
+
     const _effect = new ReactiveEffect(fn, options.scheduler)
     extend(_effect, options)
     _effect.run()
-    const runner: any = _effect.run.bind(_effect)
-    runner.effect = _effect
+    const runner = _effect.run.bind(_effect)
+
+    assign(runner, { effect: _effect })
 
     return runner
 }
